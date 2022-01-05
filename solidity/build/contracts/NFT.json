@@ -1,0 +1,117 @@
+{
+  "contractName": "NFT",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/NFT.sol\":\"NFT\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/NFT.sol\":{\"keccak256\":\"0x912adf1f8ca4df8b2b6dd093900d9d5989beddf7e4d96f63d7ed872bd4e41f94\",\"urls\":[\"bzz-raw://0abf3195dd837c08e7c829955fa71677b5136f1a795fefb1b11fee65da36bcc0\",\"dweb:/ipfs/QmXpoz1rnUncBN1dHyGGQH8fcLUhUqL3u847rLMCJeq9gH\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220a57c4dc6fe4ca47dbcddcd13ae77da09aa2bdfd8e5c592cb2e6b8998d8d150a464736f6c634300080a0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220a57c4dc6fe4ca47dbcddcd13ae77da09aa2bdfd8e5c592cb2e6b8998d8d150a464736f6c634300080a0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "27:21:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "27:21:0:-:0;;;;;",
+  "source": "pragma solidity <= 9.0.0;\n\ncontract NFT {\n    \n}",
+  "sourcePath": "/home/l.gicquel/NFT/solidity/contracts/NFT.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/NFT.sol",
+    "exportedSymbols": {
+      "NFT": [
+        2
+      ]
+    },
+    "id": 3,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "<=",
+          "9.0",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:25:0"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "NFT",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2,
+        "linearizedBaseContracts": [
+          2
+        ],
+        "name": "NFT",
+        "nameLocation": "36:3:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 3,
+        "src": "27:21:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:48:0"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/NFT.sol",
+    "exportedSymbols": {
+      "NFT": [
+        2
+      ]
+    },
+    "id": 3,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "<=",
+          "9.0",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:25:0"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "NFT",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2,
+        "linearizedBaseContracts": [
+          2
+        ],
+        "name": "NFT",
+        "nameLocation": "36:3:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 3,
+        "src": "27:21:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:48:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.10+commit.fc410830.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-01-05T16:39:56.065Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
