@@ -1,54 +1,46 @@
+import './App.css';
 import logo_metamask from './img/logo_metamask.png';
-import {React, Component} from 'react';
+
+import {Component} from 'react';
 import './App.css';
 
 import Deposit from './Deposit';
 
-// TODO
-// Bouton de connexion à metamask
-// Dépôt de métadonnée d'une image dans la blockchain (smart contract)
-// Voir connexion avec système de stockage NFT là
 class App extends Component {
-	
-	constructor(props) {
-		super(props);
 
-		this.state = {
-			this: this,
-			selectedAddress: null
-		};
+	state = {selectedAddress: null}
 
-		this.connectMetamask = this.connectMetamask.bind(this);
-	}
-
-	async componentDidMount() {
-		const {ethereum} = window;
-		if (ethereum) {
-			const account = await ethereum.selectedAddress;
-			this.setState({selectedAddress:account});
+    componentDidMount() {
+		if (this.selectedAddress==null && localStorage.getItem("selectedAddress") == null) {
+			const {ethereum} = window;
+			if (ethereum) {
+				const account = ethereum.selectedAddress;
+				this.setState({selectedAddress:account});
+				localStorage.setItem("selectedAddress", account);
+			}
 		}
-	}
-	
-	connectMetamask = async () => {
-		const {ethereum} = window;
+    }
+
+    connectMetamask = () => {
+        const {ethereum} = window;
 		if (ethereum) {
 			ethereum.request({ method: 'eth_requestAccounts' });
-			const account = await ethereum.selectedAddress;
+			const account = ethereum.selectedAddress;
 			this.setState({selectedAddress:account});
+			localStorage.setItem("selectedAddress", account);
 		} else {
 			alert("Please install Metamask in your browser");
 		}
-	}
+    }
 
-	displayConnection() {
-		if (this.state.selectedAddress) {
+    render() {
+		console.log(this.state.selectedAddress);
+        if (this.state.selectedAddress) {
 			return (
-				<>
+				<div className="Connection">
 					<p>You're connected with Metamask with account {this.state.selectedAddress}</p>
-					<Deposit
-						account={this.state.selectedAddress}
-					/>
-				</>
+                    <Deposit/>
+				</div>
 			);
 		} else {
 			return (
@@ -59,15 +51,13 @@ class App extends Component {
 				</p>
 			);
 		}
-	}
+    }
+}
 
-	render() {
-		return (
-				<div className="App">
-					<div className="Connection">
-						{this.displayConnection()}
-					</div>
-					<ul>
+export default App;
+
+/**
+ * <ul>
 						TODO:
 						<li>Image deposit form. See Deposit.js</li>
 						<li>Transaction to smart contract. See Utils.js to generic functions</li>
@@ -96,9 +86,4 @@ class App extends Component {
 						<li>List of NFT pocessed by the connected account</li>
 						<li>Transfer NFT between accounts</li>
 					</ol>
-				</div>
-		);
-	}
-}
-
-export default App;
+ */

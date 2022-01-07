@@ -1,43 +1,43 @@
 import {React, Component} from 'react';
+import ReactFileReader from 'react-file-reader';
+
+import * as raw from 'multiformats/codecs/raw'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
 
 class Deposit extends Component {
 
-	constructor(props) {
-		super(props);
+    state = {fileName: null,  cid: null}
 
-		this.state = {
-            file: null,
-            carIdentifier: null
-		};
-	}
-
-    onFileChange = event => { 
-        console.log(event.target.files);
-        // upload image in state
-        this.setState({ file: event.target.files[0] });
-        this.setState({ carIdentifier: "stub" });
-        console.log("Compute CAR identifier and upload it in state")
+    onFileChange = async event => {
+        const bytes = new TextEncoder().encode(event.target.files[0])
+        const hash = await sha256.digest(raw.encode(bytes))
+        const cid = CID.create(1, raw.code, hash)
+        console.log(cid.toString());
+        this.setState({"cid":cid.toString()});
+        console.log(event.target.files[0].name);
+        this.setState({"fileName": event.target.files[0].name});
     }
 
-    async onFileUpload(fileName, carIdentifier) { 
-        if (fileName && carIdentifier) {
+    async onFileUpload(fileName, cid) { 
+        if (fileName && cid) {
             console.log("Send identifier in NFT smart contract");
             console.log("Upload image in NFT storage thanks to nft storage API");
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
     }
 
     fileData = () => { 
-        if (this.state.file && this.state.carIdentifier) {
+        if (this.state.fileName && this.state.cid) {
             return ( 
                 <div> 
                     <h3>Image details:</h3> 
-                    <p>Name : {this.state.file.name}</p>
-                    <p>CAR Identifier : {this.state.carIdentifier}</p>
+                    <p>Name : {this.state.fileName}</p>
+                    <p>CAR Identifier : {this.state.cid}</p>
                     <br/>
-                    <button onClick={() => this.onFileUpload(this.state.file.name, this.state.carIdentifier)}>Submit</button>
+                    <button onClick={() => this.onFileUpload(this.state.file.name, this.state.cid)}>Submit</button>
                 </div> 
             ); 
         }
@@ -51,6 +51,9 @@ class Deposit extends Component {
               </h3>
               <div>
                 <input type="file" name="file" onChange={this.onFileChange} />
+                <ReactFileReader handleFiles={this.onFileChange} base64={true}>
+                    <></>
+                </ReactFileReader>
                 <br/>
                 {this.fileData()}
               </div>
