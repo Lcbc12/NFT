@@ -10,16 +10,17 @@ class App extends Component {
 
 	state = {selectedAddress: null}
 
-    componentDidMount() {
-		if (this.selectedAddress==null && localStorage.getItem("selectedAddress") == null) {
-			const {ethereum} = window;
-			if (ethereum) {
-				const account = ethereum.selectedAddress;
-				this.setState({selectedAddress:account});
-				localStorage.setItem("selectedAddress", account);
-			}
+    async loadBlockChain() {
+		const {ethereum} = window;
+		if (ethereum) {
+			const account = await ethereum.selectedAddress;
+			this.setState({selectedAddress:account});
 		}
-    }
+	}
+
+	componentDidMount() {
+		this.loadBlockChain();
+	}
 
     connectMetamask = () => {
         const {ethereum} = window;
@@ -27,19 +28,22 @@ class App extends Component {
 			ethereum.request({ method: 'eth_requestAccounts' });
 			const account = ethereum.selectedAddress;
 			this.setState({selectedAddress:account});
-			localStorage.setItem("selectedAddress", account);
 		} else {
 			alert("Please install Metamask in your browser");
 		}
     }
 
     render() {
-		console.log(this.state.selectedAddress);
         if (this.state.selectedAddress) {
 			return (
 				<div className="Connection">
 					<p>You're connected with Metamask with account {this.state.selectedAddress}</p>
-                    <Deposit/>
+                    <Deposit
+      					web3={this.props.web3}
+						contract_nft={this.props.contract_nft}
+						address_nft={this.props.address_nft}
+						account={this.state.selectedAddress}
+					/>
 				</div>
 			);
 		} else {

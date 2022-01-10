@@ -5,6 +5,8 @@ import * as raw from 'multiformats/codecs/raw'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
 
+import {call, send} from './Utils';
+
 class Deposit extends Component {
 
     state = {fileName: null,  cid: null}
@@ -23,6 +25,7 @@ class Deposit extends Component {
         if (fileName && cid) {
             console.log("Send identifier in NFT smart contract");
             console.log("Upload image in NFT storage thanks to nft storage API");
+            send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account], this.props.account);
         }
     }
 
@@ -37,7 +40,7 @@ class Deposit extends Component {
                     <p>Name : {this.state.fileName}</p>
                     <p>CAR Identifier : {this.state.cid}</p>
                     <br/>
-                    <button onClick={() => this.onFileUpload(this.state.file.name, this.state.cid)}>Submit</button>
+                    <button onClick={() => this.onFileUpload(this.state.fileName, this.state.cid)}>Submit</button>
                 </div> 
             ); 
         }

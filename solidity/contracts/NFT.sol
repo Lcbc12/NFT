@@ -2,18 +2,28 @@
 pragma solidity <= 9.0.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * TODO:
  *  - Read ERC721 to understand how the NFT precisely works
  *      https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
- *  - Add few codes to enable an account to:
- *      > deposit new data
- *      > retrieve all data stored 
- *    It looks like it's already implemented in Enumerable extension of ERC721
- *    Even transfer is done
+ *  - To call all functions of ERC721
  */
 contract NFT is ERC721 {
-    
+
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) {
+    }
+
+    function mint(address owner) public {
+        _tokenIds.increment();
+
+        uint256 id = _tokenIds.current();
+        _safeMint(owner, id);
+    }
+
 }
