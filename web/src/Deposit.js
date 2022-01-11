@@ -1,31 +1,49 @@
 import {React, Component} from 'react';
 import ReactFileReader from 'react-file-reader';
+import Button from 'react-bootstrap/Button';
 
 import * as raw from 'multiformats/codecs/raw'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
 
+import { NFTStorage, File } from 'nft.storage'
+import { pack } from 'ipfs-car/pack';
+
 import {call, send} from './Utils';
+import NFTViewer from './NFTViewer';
 
 class Deposit extends Component {
 
-    state = {fileName: null,  cid: null}
+    state = {file: null, data: null, url: null}
 
     onFileChange = async event => {
-        const bytes = new TextEncoder().encode(event.target.files[0])
-        const hash = await sha256.digest(raw.encode(bytes))
-        const cid = CID.create(1, raw.code, hash)
-        console.log(cid.toString());
-        this.setState({"cid":cid.toString()});
-        console.log(event.target.files[0].name);
-        this.setState({"fileName": event.target.files[0].name});
+        this.setState({"data": event.base64});
+        this.setState({"file": event.fileList[0]});
     }
 
-    async onFileUpload(fileName, cid) { 
-        if (fileName && cid) {
-            console.log("Send identifier in NFT smart contract");
-            console.log("Upload image in NFT storage thanks to nft storage API");
+
+    async fetchIPFSJSON(ipfsURI) {
+        const url = ipfsURI.replace(/^ipfs:\/\//, "https://dweb.link/ipfs/");
+        console.log(url);
+        const resp = await fetch(url);
+        return resp.json();
+    }
+  
+
+    async onFileUpload(file) { 
+        if (file) {
+            const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDJDZTFBMkFEMzVDOWUwRTQ2YTUzRWRFNEFlNDliRDBDYTJiMzBGMDQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MTQ4MzIyMjcxOSwibmFtZSI6InRlc3QifQ.3dAaYJQkvSAfzT7jveAe-DXXsGKfAKoOHlQ-flm4gDY'
+            const client = new NFTStorage({ token: apiKey });
+            const metadata = await client.store({
+                name: this.state.file.name,
+                description: 'test',
+                image: new File([ file ], this.state.file.name, { type: this.state.file.type })
+            });
+
             send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account], this.props.account);
+            const metadata_json = await this.fetchIPFSJSON(metadata.url);
+            const url_image = metadata_json.image.replace(/^ipfs:\/\//, "https://dweb.link/ipfs/");
+            this.setState({"url": url_image});
         }
     }
 
@@ -33,18 +51,31 @@ class Deposit extends Component {
     }
 
     fileData = () => { 
-        if (this.state.fileName && this.state.cid) {
+        if (this.state.file && this.state.data) {
             return ( 
                 <div> 
                     <h3>Image details:</h3> 
-                    <p>Name : {this.state.fileName}</p>
-                    <p>CAR Identifier : {this.state.cid}</p>
+                    <p>Name: {this.state.file.name}</p>
+                    <p>Type: {this.state.file.type} </p>
+                    <img src={this.state.data}/>
                     <br/>
-                    <button onClick={() => this.onFileUpload(this.state.fileName, this.state.cid)}>Submit</button>
-                </div> 
-            ); 
+                    <button onClick={() => this.onFileUpload(this.state.file)}>Submit</button>
+                </div>
+            );
         }
-    }; 
+    };
+
+    displayViewer = () => {
+        if (this.state.url) {
+            return (
+                <div>
+                    <NFTViewer
+                        url={this.state.url}
+                    />
+                </div>
+            );
+        }
+    }
 
     render() { 
         return ( 
@@ -53,12 +84,14 @@ class Deposit extends Component {
                 Deposit you image :
               </h3>
               <div>
-                <input type="file" name="file" onChange={this.onFileChange} />
                 <ReactFileReader handleFiles={this.onFileChange} base64={true}>
-                    <></>
+                    <Button type="button" variant="primary" className="custom-btn">
+                            Browse...
+                    </Button>
                 </ReactFileReader>
                 <br/>
                 {this.fileData()}
+                {this.displayViewer()}
               </div>
           </div>
         ); 
