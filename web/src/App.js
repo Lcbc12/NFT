@@ -5,6 +5,7 @@ import {Component} from 'react';
 import './App.css';
 
 import Deposit from './Deposit';
+import NFTViewer from './NFTViewer';
 
 class App extends Component {
 
@@ -39,6 +40,12 @@ class App extends Component {
 				<div className="Connection">
 					<p>You're connected with Metamask with account {this.state.selectedAddress}</p>
                     <Deposit
+      					web3={this.props.web3}
+						contract_nft={this.props.contract_nft}
+						address_nft={this.props.address_nft}
+						account={this.state.selectedAddress}
+					/>
+					<NFTViewer 
       					web3={this.props.web3}
 						contract_nft={this.props.contract_nft}
 						address_nft={this.props.address_nft}

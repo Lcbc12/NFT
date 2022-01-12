@@ -15,15 +15,25 @@ contract NFT is ERC721 {
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    mapping(uint256 => string) private _tokenURIs;
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) {
+    constructor(
+        string memory name,
+        string memory symbol
+    )
+    ERC721(name, symbol)
+    {
     }
 
-    function mint(address owner) public {
+    function mint(address owner, string memory uri) public {
         _tokenIds.increment();
 
         uint256 id = _tokenIds.current();
         _safeMint(owner, id);
+        _tokenURIs[id] = uri;
     }
 
+    function getURI(uint256 tokenId) public view returns(string memory) {
+        return _tokenURIs[tokenId];
+    }
 }

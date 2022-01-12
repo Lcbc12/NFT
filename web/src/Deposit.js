@@ -10,25 +10,15 @@ import { NFTStorage, File } from 'nft.storage'
 import { pack } from 'ipfs-car/pack';
 
 import {call, send} from './Utils';
-import NFTViewer from './NFTViewer';
 
 class Deposit extends Component {
 
-    state = {file: null, data: null, url: null}
+    state = {file: null, data: null}
 
     onFileChange = async event => {
         this.setState({"data": event.base64});
         this.setState({"file": event.fileList[0]});
-    }
-
-
-    async fetchIPFSJSON(ipfsURI) {
-        const url = ipfsURI.replace(/^ipfs:\/\//, "https://dweb.link/ipfs/");
-        console.log(url);
-        const resp = await fetch(url);
-        return resp.json();
-    }
-  
+    }  
 
     async onFileUpload(file) { 
         if (file) {
@@ -40,10 +30,7 @@ class Deposit extends Component {
                 image: new File([ file ], this.state.file.name, { type: this.state.file.type })
             });
 
-            send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account], this.props.account);
-            const metadata_json = await this.fetchIPFSJSON(metadata.url);
-            const url_image = metadata_json.image.replace(/^ipfs:\/\//, "https://dweb.link/ipfs/");
-            this.setState({"url": url_image});
+            await send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account, metadata.url], this.props.account);
         }
     }
 
@@ -65,18 +52,6 @@ class Deposit extends Component {
         }
     };
 
-    displayViewer = () => {
-        if (this.state.url) {
-            return (
-                <div>
-                    <NFTViewer
-                        url={this.state.url}
-                    />
-                </div>
-            );
-        }
-    }
-
     render() { 
         return ( 
           <div>
@@ -91,7 +66,6 @@ class Deposit extends Component {
                 </ReactFileReader>
                 <br/>
                 {this.fileData()}
-                {this.displayViewer()}
               </div>
           </div>
         ); 
