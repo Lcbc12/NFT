@@ -34,6 +34,15 @@ contract NFT is ERC721 {
     }
 
     function getURI(uint256 tokenId) public view returns(string memory) {
+        require(!_compareStrings(_tokenURIs[tokenId], ""), "Search URI for an inexistant token");
         return _tokenURIs[tokenId];
+    }
+
+    function _compareStrings(string memory a, string memory b)
+    internal pure returns (bool) {
+        return (
+            keccak256(abi.encodePacked((a))) ==
+            keccak256(abi.encodePacked((b)))
+        );
     }
 }

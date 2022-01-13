@@ -21,12 +21,15 @@ class Deposit extends Component {
     }  
 
     async onFileUpload(file) { 
-        if (file) {
-            const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDJDZTFBMkFEMzVDOWUwRTQ2YTUzRWRFNEFlNDliRDBDYTJiMzBGMDQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MTQ4MzIyMjcxOSwibmFtZSI6InRlc3QifQ.3dAaYJQkvSAfzT7jveAe-DXXsGKfAKoOHlQ-flm4gDY'
+        const apiKey = localStorage.getItem("APIKey");
+        const name = document.getElementById("txt_name").value;
+        const description = document.getElementById("txt_description").value;
+        if (file && apiKey != "" && name != "" && description != "") {
             const client = new NFTStorage({ token: apiKey });
+            
             const metadata = await client.store({
-                name: this.state.file.name,
-                description: 'test',
+                name: name,
+                description: description,
                 image: new File([ file ], this.state.file.name, { type: this.state.file.type })
             });
 
@@ -41,12 +44,24 @@ class Deposit extends Component {
         if (this.state.file && this.state.data) {
             return ( 
                 <div> 
-                    <h3>Image details:</h3> 
-                    <p>Name: {this.state.file.name}</p>
-                    <p>Type: {this.state.file.type} </p>
+                    <h3>Image details:</h3>
                     <img src={this.state.data}/>
                     <br/>
-                    <button onClick={() => this.onFileUpload(this.state.file)}>Submit</button>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><label>File name:</label></td>
+                                <td><input id="txt_name" type="text"></input></td>
+                            </tr>
+                            <tr>
+                                <td><label>Description:</label></td>
+                                <td><input id="txt_description" type="text"></input></td>
+                            </tr>
+                            <tr>
+                                <td></td><td><button onClick={() => this.onFileUpload(this.state.file)}>Submit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             );
         }
