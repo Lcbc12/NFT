@@ -15,6 +15,7 @@ contract NFT is ERC721 {
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    uint256[] private _ids;
     mapping(uint256 => string) private _tokenURIs;
 
     constructor(
@@ -31,11 +32,16 @@ contract NFT is ERC721 {
         uint256 id = _tokenIds.current();
         _safeMint(owner, id);
         _tokenURIs[id] = uri;
+        _ids.push(id);
     }
 
     function getURI(uint256 tokenId) public view returns(string memory) {
         require(!_compareStrings(_tokenURIs[tokenId], ""), "Search URI for an inexistant token");
         return _tokenURIs[tokenId];
+    }
+
+    function getIds() public view returns(uint256[] memory) {
+        return _ids;
     }
 
     function _compareStrings(string memory a, string memory b)

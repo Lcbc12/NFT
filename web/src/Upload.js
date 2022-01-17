@@ -11,7 +11,7 @@ import { pack } from 'ipfs-car/pack';
 
 import {call, send} from './Utils';
 
-class Deposit extends Component {
+class Upload extends Component {
 
     state = {file: null, data: null}
 
@@ -43,14 +43,14 @@ class Deposit extends Component {
     fileData = () => { 
         if (this.state.file && this.state.data) {
             return ( 
-                <div> 
+                <div className='content'> 
                     <h3>Image details:</h3>
                     <img src={this.state.data}/>
                     <br/>
                     <table>
                         <tbody>
                             <tr>
-                                <td><label>File name:</label></td>
+                                <td><label>NFT name:</label></td>
                                 <td><input id="txt_name" type="text"></input></td>
                             </tr>
                             <tr>
@@ -71,7 +71,7 @@ class Deposit extends Component {
         return ( 
           <div>
               <h3> 
-                Deposit you image :
+                Upload your image :
               </h3>
               <div>
                 <ReactFileReader handleFiles={this.onFileChange} base64={true}>
@@ -87,4 +87,4 @@ class Deposit extends Component {
     }
 }
 
-export default Deposit;
+export default Upload;

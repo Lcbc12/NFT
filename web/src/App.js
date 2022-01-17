@@ -1,14 +1,15 @@
 import './App.css';
-import logo_metamask from './img/logo_metamask.png';
 
 import {Component} from 'react';
 import Button from 'react-bootstrap/Button';
 import './App.css';
 
-import Deposit from './Deposit';
+import Upload from './Upload';
 import NFTViewer from './NFTViewer';
 
 class App extends Component {
+
+	state = { screen: "upload" }
 
     async loadBlockChain() {
 		const {ethereum} = window;
@@ -20,13 +21,12 @@ class App extends Component {
 
 	componentDidMount() {
 		window.ethereum.on('accountsChanged', function (accounts) {
-			console.log(accounts);
 			localStorage.setItem("selectedAddress", accounts[0]);
 			window.location.reload();
 		});
 
 		window.ethereum.on('connect', function(accounts) {
-			localStorage.setItem("selectedADdress", accounts[0]);
+			localStorage.setItem("selectedAddress", accounts[0]);
 		});
 
 		window.ethereum.on('disconnect', function() {
@@ -55,40 +55,107 @@ class App extends Component {
 		if (localStorage.getItem("APIKey")) {
 			return (
 				<div>
-					<p>Your NFT Storage API Key is: {localStorage.getItem("APIKey")}</p>
+					<p>
+						Your NFT Storage API Key is set.
+					</p>
+					<p>
+						Copy your key:
+						<Button onClick={() => this.copyToClipBoard()} title={localStorage.getItem("APIKey")}>i</Button>
+					</p>
+					<table>
+						<tbody>
+							<tr>
+								<td><label>Please set your NFT Storage API key:</label></td>
+								<td><input id="txt_api_key" type="text"></input></td>
+								<td><Button onClick={() => this.setAPIKey()}>Set API Key</Button></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			);
 		} else {
 			return(
 				<div>
-					<label>Please set your NFT Storage API key:</label>
-					<input id="txt_api_key" type="text"></input>
-					<Button onClick={() => this.setAPIKey()}>Set API Key</Button>
+					<table>
+						<tbody>
+							<tr>
+								<td><label>Please set your NFT Storage API key:</label></td>
+								<td><input id="txt_api_key" type="text"></input></td>
+								<td><Button onClick={() => this.setAPIKey()}>Set API Key</Button></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			);
 		}
 	}
+
+	displayConnection() {
+		return(
+			<div className="Connection">
+				<p>You're connected with Metamask with account {localStorage.getItem("selectedAddress")}</p>
+				{this.displayAPIKey()}
+			</div>
+		);
+	}
+
+	upload = () => {
+		this.setState({"screen":"upload"});
+	}
+
+	myNFT = () => {
+		this.setState({"screen":"allNFT"});
+	}
+
+	connection = () => {
+		this.setState({"screen":"connection"});
+	}
+
+	copyToClipBoard = () => {
+		navigator.clipboard.writeText(localStorage.getItem("APIKey"));
+	}
 	
 	render() {
 		const selectedAddress = localStorage.getItem("selectedAddress");
-		console.log(selectedAddress);
         if (selectedAddress !== "undefined") {
 			return (
-				<div className="Connection">
-					<p>You're connected with Metamask with account {selectedAddress}</p>
-					{this.displayAPIKey()}
-                    <Deposit
-      					web3={this.props.web3}
-						contract_nft={this.props.contract_nft}
-						address_nft={this.props.address_nft}
-						account={selectedAddress}
-					/>
-					<NFTViewer 
-      					web3={this.props.web3}
-						contract_nft={this.props.contract_nft}
-						address_nft={this.props.address_nft}
-						account={selectedAddress}
-					/>
+				<div className='App'>
+					<div className='container'>
+						<h1>NFT Minter</h1>
+
+						<table className="bandeau">
+							<tbody>
+								<tr>
+									<td><Button type="button" variant="primary" className="menu" onClick={this.upload}>Upload NFT</Button></td>
+									<td><Button type="button" variant="primary" className="menu" onClick={this.myNFT}>All NFT</Button></td>
+									<td><Button type="button" variant="primary" className="menu" onClick={this.connection}>Wallet & NFT Storage</Button></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<div className='content'>
+
+							{this.state.screen==="connection" && this.displayConnection()}
+							{
+								this.state.screen==="upload" &&
+								<Upload
+									web3={this.props.web3}
+									contract_nft={this.props.contract_nft}
+									address_nft={this.props.address_nft}
+									account={selectedAddress}
+								/>
+							}
+							{
+								this.state.screen === "allNFT" &&
+								<NFTViewer 
+									web3={this.props.web3}
+									contract_nft={this.props.contract_nft}
+									address_nft={this.props.address_nft}
+									account={selectedAddress}
+								/>
+							}
+						</div>
+					</div>
 				</div>
 			);
 		} else {
@@ -106,12 +173,12 @@ export default App;
 /**
  * <ul>
 						TODO:
-						<li>Image deposit form. See Deposit.js</li>
+						<li>Image upload form. See Upload.js</li>
 						<li>Transaction to smart contract. See Utils.js to generic functions</li>
 						<li>
 							<ul>
 							Connection to NFT Storage
-									<li>Use ipfs-car to make an identifier of file to deposit : https://github.com/web3-storage/ipfs-car</li>
+									<li>Use ipfs-car to make an identifier of file to upload : https://github.com/web3-storage/ipfs-car</li>
 									<li>Learn nft storage API : https://nftstorage.github.io/nft.storage/client/ & https://nft.storage/api-docs/</li>
 							</ul>
 						</li>
@@ -122,7 +189,7 @@ export default App;
 					<ol>
 						Process:
 						<li>Connection to, at least, one wallet. v1: just MetaMask</li>
-						<li>Deposit image we want as a NFT</li>
+						<li>Upload image we want as a NFT</li>
 						<li>Use ipfs-car to get the corresponding identifier</li>
 						<li>Add identifier to the NFT smart contract</li>
 						<li>Upload the image in NFT Storage</li>
