@@ -20,27 +20,31 @@ class Upload extends Component {
         this.setState({"file": event.fileList[0]});
     }  
 
-    async onFileUpload(file) { 
-        const apiKey = localStorage.getItem("APIKey");
-        const name = document.getElementById("txt_name").value;
-        const description = document.getElementById("txt_description").value;
-        if (file && apiKey != "" && name != "" && description != "") {
-            const client = new NFTStorage({ token: apiKey });
-            
-            const metadata = await client.store({
-                name: name,
-                description: description,
-                image: new File([ file ], this.state.file.name, { type: this.state.file.type })
-            });
+    async onFileUpload(file) {
+        if (this.props.connected) {
+            const apiKey = localStorage.getItem("APIKey");
+            const name = document.getElementById("txt_name").value;
+            const description = document.getElementById("txt_description").value;
+            if (file && apiKey !== "" && name !== "" && description !== "") {
+                const client = new NFTStorage({ token: apiKey });
+                
+                const metadata = await client.store({
+                    name: name,
+                    description: description,
+                    image: new File([ file ], this.state.file.name, { type: this.state.file.type })
+                });
 
-            await send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account, metadata.url], this.props.account);
+                await send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account, metadata.url], this.props.account);
+            }
+        } else {
+            alert("You're not connected to MetaMask!");
         }
     }
 
     async componentDidMount() {
     }
 
-    fileData = () => { 
+    fileData = () => {
         if (this.state.file && this.state.data) {
             return ( 
                 <div className='content'> 
@@ -58,7 +62,7 @@ class Upload extends Component {
                                 <td><input id="txt_description" type="text"></input></td>
                             </tr>
                             <tr>
-                                <td></td><td><button onClick={() => this.onFileUpload(this.state.file)}>Submit</button></td>
+                                <td></td><td><button className="button" onClick={() => this.onFileUpload(this.state.file)} disabled={!this.props.connected}>Submit</button></td>
                             </tr>
                         </tbody>
                     </table>

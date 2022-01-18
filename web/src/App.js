@@ -4,29 +4,21 @@ import {Component} from 'react';
 import Button from 'react-bootstrap/Button';
 import './App.css';
 
+import logo_information from "./img/logo_information.png";
+
 import Upload from './Upload';
 import NFTViewer from './NFTViewer';
 
 class App extends Component {
 
-	state = { screen: "upload" }
-
-    async loadBlockChain() {
-		const {ethereum} = window;
-		if (ethereum) {
-			ethereum.request({ method: 'eth_requestAccounts' });
-			localStorage.setItem("selectedAddress", ethereum.selectedAddress);
-		}
-	}
+	state = { screen: "upload"}
 
 	componentDidMount() {
+
 		window.ethereum.on('accountsChanged', function (accounts) {
+			console.log("Accounts Changed");
 			localStorage.setItem("selectedAddress", accounts[0]);
 			window.location.reload();
-		});
-
-		window.ethereum.on('connect', function(accounts) {
-			localStorage.setItem("selectedAddress", accounts[0]);
 		});
 
 		window.ethereum.on('disconnect', function() {
@@ -37,6 +29,7 @@ class App extends Component {
     connectMetamask = () => {
         const {ethereum} = window;
 		if (ethereum) {
+			console.log("connectMetamask");
 			ethereum.request({ method: 'eth_requestAccounts' });
 			localStorage.setItem("selectedAddress", ethereum.selectedAddress);
 		} else {
@@ -52,15 +45,13 @@ class App extends Component {
 	}
 
 	displayAPIKey() {
+		//<Button onClick={() => this.copyToClipBoard()} title={localStorage.getItem("APIKey")}>i</Button>
 		if (localStorage.getItem("APIKey")) {
 			return (
 				<div>
 					<p>
 						Your NFT Storage API Key is set.
-					</p>
-					<p>
-						Copy your key:
-						<Button onClick={() => this.copyToClipBoard()} title={localStorage.getItem("APIKey")}>i</Button>
+						<img className='information' onClick={() => this.copyToClipBoard()} src={logo_information} title={localStorage.getItem("APIKey")}/>
 					</p>
 					<table>
 						<tbody>
@@ -91,12 +82,21 @@ class App extends Component {
 	}
 
 	displayConnection() {
-		return(
-			<div className="Connection">
-				<p>You're connected with Metamask with account {localStorage.getItem("selectedAddress")}</p>
-				{this.displayAPIKey()}
-			</div>
-		);
+		if (localStorage.getItem("selectedAddress") !== "undefined") {
+			return(
+				<div className="Connection">
+					<p>You're connected with Metamask with account {localStorage.getItem("selectedAddress")}</p>
+					{this.displayAPIKey()}
+				</div>
+			);
+		} else {
+			return(
+				<div className="Connection">
+					<p>You're not connected with Metamask. Please connect to mint NFT!</p>
+					<p><Button onClick={this.connectMetamask}>Connect to MetaMask</Button></p>
+				</div>
+			);
+		}
 	}
 
 	upload = () => {
@@ -116,55 +116,47 @@ class App extends Component {
 	}
 	
 	render() {
-		const selectedAddress = localStorage.getItem("selectedAddress");
-        if (selectedAddress !== "undefined") {
-			return (
-				<div className='App'>
-					<div className='container'>
-						<h1>NFT Minter</h1>
+		return (
+			<div className='App'>
+				<div className='container'>
+					<div className="title"><h1>NFT Minter</h1></div>
 
-						<table className="bandeau">
-							<tbody>
-								<tr>
-									<td><Button type="button" variant="primary" className="menu" onClick={this.upload}>Upload NFT</Button></td>
-									<td><Button type="button" variant="primary" className="menu" onClick={this.myNFT}>All NFT</Button></td>
-									<td><Button type="button" variant="primary" className="menu" onClick={this.connection}>Wallet & NFT Storage</Button></td>
-								</tr>
-							</tbody>
-						</table>
+					<table className="bandeau">
+						<tbody>
+							<tr>
+								<td><Button type="button" variant="primary" className="menu" onClick={this.upload}>Upload NFT</Button></td>
+								<td><Button type="button" variant="primary" className="menu" onClick={this.myNFT}>All NFT</Button></td>
+								<td><Button type="button" variant="primary" className="menu" onClick={this.connection}>Wallet & NFT Storage</Button></td>
+							</tr>
+						</tbody>
+					</table>
 
-						<div className='content'>
+					<div className='content'>
 
-							{this.state.screen==="connection" && this.displayConnection()}
-							{
-								this.state.screen==="upload" &&
-								<Upload
-									web3={this.props.web3}
-									contract_nft={this.props.contract_nft}
-									address_nft={this.props.address_nft}
-									account={selectedAddress}
-								/>
-							}
-							{
-								this.state.screen === "allNFT" &&
-								<NFTViewer 
-									web3={this.props.web3}
-									contract_nft={this.props.contract_nft}
-									address_nft={this.props.address_nft}
-									account={selectedAddress}
-								/>
-							}
-						</div>
+						{this.state.screen==="connection" && this.displayConnection()}
+						{
+							this.state.screen==="upload" &&
+							<Upload
+								web3={this.props.web3}
+								contract_nft={this.props.contract_nft}
+								address_nft={this.props.address_nft}
+								account={localStorage.getItem("selectedAddress")}
+								connected={localStorage.getItem("selectedAddress") !== "undefined"}
+							/>
+						}
+						{
+							this.state.screen === "allNFT" &&
+							<NFTViewer 
+								web3={this.props.web3}
+								contract_nft={this.props.contract_nft}
+								address_nft={this.props.address_nft}
+								account={localStorage.getItem("selectedAddress")}
+							/>
+						}
 					</div>
 				</div>
-			);
-		} else {
-			return (
-				<p>
-					<Button onClick={this.connectMetamask}>Connect to MetaMask</Button>
-				</p>
-			);
-		}
+			</div>
+		);
     }
 }
 

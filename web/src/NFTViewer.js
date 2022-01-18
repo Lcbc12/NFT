@@ -15,6 +15,7 @@ class NFTViewer extends Component {
 
     async loadIds() {
         const ids = await call(this.props.web3, this.props.contract_nft, this.props.address_nft, "getIds", null);
+        console.log(ids);
         var nfts = [];
         for(var id in ids) {
             const uri = await call(this.props.web3, this.props.contract_nft, this.props.address_nft, "getURI", [ids[id]]);
@@ -27,11 +28,6 @@ class NFTViewer extends Component {
     }
 
     componentDidMount() {
-        //TODO 1: get all ids from smart contract
-        //     2: retrieve all URIs from ids
-        //     3: displays all image from URIs
-        //     Let the possibility to the user to search a specific NFT
-        //     Maybe display more details (deposit date, owner, etc.)
         this.loadIds();
     }
 

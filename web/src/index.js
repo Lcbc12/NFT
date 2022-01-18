@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import Web3 from 'web3';
 import NFT from './contracts/NFT.json';
 
+//TODO detect on where network we are
+// We would be able to know which cryptowallet to call
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 const contract_nft = new web3.eth.Contract(NFT.abi);
 const address_nft = NFT.networks[2022].address;

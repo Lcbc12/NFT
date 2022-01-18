@@ -40,5 +40,7 @@ export async function send(web3, contract_abi, contract_address, method, values,
     await window.ethereum.request({
         method: 'eth_sendTransaction',
         params: [metamask]
-    });
+    })
+    .then(() => {alert("Transaction send!")})
+    .catch((error) => {alert("Error during transaction:" + error)});
 }
