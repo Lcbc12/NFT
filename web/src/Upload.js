@@ -2,38 +2,49 @@ import {React, Component} from 'react';
 import ReactFileReader from 'react-file-reader';
 import Button from 'react-bootstrap/Button';
 
-import * as raw from 'multiformats/codecs/raw'
-import { CID } from 'multiformats/cid'
-import { sha256 } from 'multiformats/hashes/sha2'
-
 import { NFTStorage, File } from 'nft.storage'
-import { pack } from 'ipfs-car/pack';
 
-import {call, send} from './Utils';
+import {send} from './Utils';
 
+/**
+ * Contains functions to mint a NFT from an image. 
+ */
 class Upload extends Component {
 
     state = {file: null, data: null}
 
+    /**
+     * When uploading a new file on the site, stores all information in
+     * the state
+     */
     onFileChange = async event => {
         this.setState({"data": event.base64});
         this.setState({"file": event.fileList[0]});
     }  
 
-    async onFileUpload(file) {
-        if (this.props.connected) {
+    /**
+     * When clicking the submit button, get the NFT storage API key, NFT name
+     * and description before:
+     *  1. uploads the image in NFT Storage. It returns the metadata JSON file;
+     *  2. from the metadata file, get the URI and upload it in the blockchain.
+     */
+    async onFileUpload() {
+        const file = this.state.file;
+        if (this.props.connected && file) {
             const apiKey = localStorage.getItem("APIKey");
             const name = document.getElementById("txt_name").value;
             const description = document.getElementById("txt_description").value;
             if (file && apiKey !== "" && name !== "" && description !== "") {
                 const client = new NFTStorage({ token: apiKey });
                 
+                // creates a file in NFT Storage
                 const metadata = await client.store({
                     name: name,
                     description: description,
-                    image: new File([ file ], this.state.file.name, { type: this.state.file.type })
+                    image: new File([ file ], file.name, { type: file.type })
                 });
 
+                // upload all generated elements in the blockchain
                 await send(this.props.web3, this.props.contract_nft, this.props.address_nft, "mint", [this.props.account, metadata.url], this.props.account);
             }
         } else {
@@ -41,10 +52,19 @@ class Upload extends Component {
         }
     }
 
+    /**
+     * Nothing to load here, everything must be given by the user
+     */
     async componentDidMount() {
     }
 
-    fileData = () => {
+    /**
+     * After the user uploaded the image, display the form to fill the
+     * necessary fields.
+     * Also display the button to submit her file.
+     */
+    diplayFileData = () => {
+        // display the form only if a file is uploaded, nothing otherwise
         if (this.state.file && this.state.data) {
             return ( 
                 <div className='content'> 
@@ -62,7 +82,16 @@ class Upload extends Component {
                                 <td><input id="txt_description" type="text"></input></td>
                             </tr>
                             <tr>
-                                <td></td><td><button className="button" onClick={() => this.onFileUpload(this.state.file)} disabled={!this.props.connected}>Submit</button></td>
+                                <td></td>
+                                <td>
+                                    <button
+                                        className="button"
+                                        onClick={() => this.onFileUpload()}
+                                        disabled={!this.props.connected}
+                                    >
+                                        Submit
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -71,6 +100,9 @@ class Upload extends Component {
         }
     };
 
+    /**
+     * Display all necessary elements to mint a new NFT
+     */
     render() { 
         return ( 
           <div>
@@ -84,7 +116,7 @@ class Upload extends Component {
                     </Button>
                 </ReactFileReader>
                 <br/>
-                {this.fileData()}
+                {this.diplayFileData()}
               </div>
           </div>
         ); 
